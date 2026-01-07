@@ -1,31 +1,48 @@
 // LocalStorage utility for video management
 const STORAGE_KEY = 'uyoms_videos'
 const ADMIN_PASSWORD_KEY = 'uyoms_admin_password'
+const INITIALIZED_KEY = 'uyoms_videos_initialized'
 
-// Default videos (fallback)
-const defaultVideos = [
-  {
-    id: 'video1',
-    title: 'Denim Jacket - Classic Blue',
-    description: 'Premium denim jacket with classic fit. Perfect for any occasion.',
-    videoUrl: 'https://drive.google.com/file/d/YOUR_FILE_ID_1/preview',
-    posterUrl: '',
-  },
-]
+// Import default videos from data file
+import { videos as defaultVideos } from '../data/videos.js'
 
 // Get videos from localStorage
 export const getVideos = () => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY)
     if (stored) {
-      return JSON.parse(stored)
+      const videos = JSON.parse(stored)
+      // Only return stored videos if they exist and aren't empty
+      if (Array.isArray(videos) && videos.length > 0) {
+        return videos
+      }
     }
-    // Initialize with default videos if nothing exists
-    setVideos(defaultVideos)
-    return defaultVideos
+    
+    // Only initialize with default videos ONCE (first time, and only if they're real videos)
+    const initialized = localStorage.getItem(INITIALIZED_KEY)
+    if (!initialized) {
+      // Filter out placeholder videos (ones with YOUR_FILE_ID)
+      const realVideos = defaultVideos.filter(v => 
+        v.videoUrl && 
+        !v.videoUrl.includes('YOUR_FILE_ID') && 
+        v.videoUrl.includes('drive.google.com')
+      )
+      
+      if (realVideos.length > 0) {
+        setVideos(realVideos)
+        localStorage.setItem(INITIALIZED_KEY, 'true')
+        return realVideos
+      } else {
+        // Mark as initialized even if no real videos, so we don't keep checking
+        localStorage.setItem(INITIALIZED_KEY, 'true')
+      }
+    }
+    
+    // Return empty array if no videos exist (don't show placeholders)
+    return []
   } catch (error) {
     console.error('Error loading videos:', error)
-    return defaultVideos
+    return []
   }
 }
 
@@ -33,6 +50,10 @@ export const getVideos = () => {
 export const setVideos = (videos) => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(videos))
+    // Mark as initialized when videos are saved
+    localStorage.setItem(INITIALIZED_KEY, 'true')
+    // Dispatch event to notify other components
+    window.dispatchEvent(new Event('videosUpdated'))
     return true
   } catch (error) {
     console.error('Error saving videos:', error)
@@ -91,5 +112,33 @@ export const getAdminPassword = () => {
 
 export const checkAdminPassword = (password) => {
   return password === getAdminPassword()
+}
+
+// Export videos as JSON string
+export const exportVideos = () => {
+  const videos = getVideos()
+  return JSON.stringify(videos, null, 2)
+}
+
+// Import videos from JSON string
+export const importVideos = (jsonString) => {
+  try {
+    const videos = JSON.parse(jsonString)
+    if (Array.isArray(videos)) {
+      setVideos(videos)
+      return true
+    }
+    return false
+  } catch (error) {
+    console.error('Error importing videos:', error)
+    return false
+  }
+}
+
+// Reset videos (clear all)
+export const resetVideos = () => {
+  localStorage.removeItem(STORAGE_KEY)
+  localStorage.removeItem(INITIALIZED_KEY)
+  window.dispatchEvent(new Event('videosUpdated'))
 }
 

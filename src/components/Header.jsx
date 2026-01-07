@@ -174,7 +174,7 @@ const Header = () => {
                   >
                     <Box className="w-full h-full rounded-full overflow-hidden bg-gradient-to-br from-gray-50 via-blue-50/50 to-white">
                       <motion.img
-                        src="/Uyo's.jpg"
+                        src={`${import.meta.env.BASE_URL}Uyo's.jpg`}
                         alt="Uyom's Denim & Co. Logo"
                         className="w-full h-full object-cover"
                         animate={{
@@ -187,9 +187,9 @@ const Header = () => {
                         }}
                         onError={(e) => {
                           if (e.target.src.includes("Uyo's.jpg")) {
-                            e.target.src = "/oriakum.jpg"
+                            e.target.src = `${import.meta.env.BASE_URL}oriakum.jpg`
                           } else if (e.target.src.includes("oriakum.jpg")) {
-                            e.target.src = "/nkem.jpg"
+                            e.target.src = `${import.meta.env.BASE_URL}nkem.jpg`
                           }
                         }}
                       />

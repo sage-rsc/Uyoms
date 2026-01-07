@@ -32,8 +32,10 @@ import {
   Edit,
   VideoLibrary,
   Lock,
+  Download,
+  Upload,
 } from '@mui/icons-material'
-import { getVideos, addVideo, removeVideo, updateVideo, checkAdminPassword } from '../utils/storage'
+import { getVideos, addVideo, removeVideo, updateVideo, checkAdminPassword, exportVideos, importVideos } from '../utils/storage'
 
 function Admin() {
   const navigate = useNavigate()
@@ -404,14 +406,14 @@ function Admin() {
           </Box>
         </motion.div>
 
-        {/* Add Video Button */}
+        {/* Action Buttons */}
         <AnimatePresence>
           {!showAddForm && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="mb-6"
+              className="mb-6 flex flex-wrap gap-3"
             >
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Button
@@ -431,6 +433,37 @@ function Admin() {
                 >
                   Add New Video
                 </Button>
+              </motion.div>
+              
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  variant="outlined"
+                  startIcon={<Download />}
+                  onClick={handleExportVideos}
+                  className="border-denim text-denim hover:bg-denim/10 font-semibold rounded-xl"
+                  sx={{ textTransform: 'none', py: 1.5, px: 3 }}
+                >
+                  Export Videos
+                </Button>
+              </motion.div>
+              
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  variant="outlined"
+                  startIcon={<Upload />}
+                  onClick={() => document.getElementById('import-file-input')?.click()}
+                  className="border-denim text-denim hover:bg-denim/10 font-semibold rounded-xl"
+                  sx={{ textTransform: 'none', py: 1.5, px: 3 }}
+                >
+                  Import Videos
+                </Button>
+                <input
+                  id="import-file-input"
+                  type="file"
+                  accept=".json"
+                  style={{ display: 'none' }}
+                  onChange={handleImportVideos}
+                />
               </motion.div>
             </motion.div>
           )}
