@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
-import { Box, Typography, Container, IconButton, Button } from '@mui/material'
+import { Box, Typography, Container, IconButton, Button, useMediaQuery, useTheme } from '@mui/material'
 import { ChevronLeft, ChevronRight, GridView, ArrowForward } from '@mui/icons-material'
 import VideoCard from './VideoCard'
 
@@ -10,6 +10,8 @@ const VideoGallery = ({ videos, initialVideoId }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const galleryRef = useRef(null)
   const isInView = useInView(galleryRef, { once: true, amount: 0.1 })
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
   useEffect(() => {
     if (initialVideoId) {
@@ -279,7 +281,7 @@ const VideoGallery = ({ videos, initialVideoId }) => {
           {/* Centered Stacked Carousel */}
           {videos.length > 0 && (
             <Box className="relative">
-              <Box className="relative h-[650px] md:h-[750px] flex items-center justify-center">
+              <Box className="relative h-[500px] sm:h-[600px] md:h-[750px] flex items-center justify-center overflow-hidden">
                 {/* Stacked Cards - Centered with cards on both sides */}
                 <AnimatePresence mode="wait">
                   {visibleVideos.map((video, idx) => {
@@ -288,10 +290,11 @@ const VideoGallery = ({ videos, initialVideoId }) => {
                     const isRight = video.position === 1
                     
                     const zIndex = isActive ? 30 : isLeft ? 20 : 25
-                    const scale = isActive ? 1 : 0.85
-                    const xOffset = isLeft ? -200 : isRight ? 200 : 0
-                    const opacity = isActive ? 1 : 0.6
-                    const rotation = isLeft ? -10 : isRight ? 10 : 0
+                    // Mobile: show only active card, desktop: show stacked cards
+                    const scale = isActive ? 1 : (isMobile ? 0 : 0.85)
+                    const xOffset = isMobile ? 0 : (isLeft ? -200 : isRight ? 200 : 0)
+                    const opacity = isActive ? 1 : (isMobile ? 0 : 0.6)
+                    const rotation = isMobile ? 0 : (isLeft ? -10 : isRight ? 10 : 0)
 
                     return (
                       <motion.div
@@ -323,11 +326,13 @@ const VideoGallery = ({ videos, initialVideoId }) => {
                         style={{
                           position: 'absolute',
                           zIndex: zIndex,
-                          width: '320px',
+                          width: isMobile ? '280px' : '320px',
                           maxWidth: '90%',
                           transformStyle: 'preserve-3d',
+                          // Disable 3D transforms on mobile for better performance
+                          willChange: isMobile ? 'auto' : 'transform',
                         }}
-                        whileHover={isActive ? {
+                        whileHover={!isMobile ? (isActive ? {
                           scale: 1.08,
                           y: -20,
                           transition: { duration: 0.4, ease: 'easeOut' }
@@ -335,7 +340,7 @@ const VideoGallery = ({ videos, initialVideoId }) => {
                           scale: scale + 0.1,
                           y: -10,
                           transition: { duration: 0.3 }
-                        }}
+                        }) : undefined}
                         className="cursor-pointer"
                         onClick={(e) => {
                           if (!isActive) {
@@ -389,13 +394,13 @@ const VideoGallery = ({ videos, initialVideoId }) => {
                 {videos.length > 1 && (
                   <>
                     <motion.div
-                      className="absolute left-0 md:left-4 top-1/2 -translate-y-1/2 z-40"
-                      whileHover={{ scale: 1.15, x: -5 }}
+                      className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-40"
+                      whileHover={!isMobile ? { scale: 1.15, x: -5 } : undefined}
                       whileTap={{ scale: 0.9 }}
                     >
                       <IconButton
                         onClick={prevVideo}
-                        className="bg-white hover:bg-gray-50 shadow-2xl border-2 border-gray-200 rounded-full w-16 h-16"
+                        className="bg-white hover:bg-gray-50 shadow-2xl border-2 border-gray-200 rounded-full w-12 h-12 sm:w-16 sm:h-16"
                         sx={{
                           '&:hover': { 
                             backgroundColor: 'white',
@@ -417,13 +422,13 @@ const VideoGallery = ({ videos, initialVideoId }) => {
                     </motion.div>
 
                     <motion.div
-                      className="absolute right-0 md:right-4 top-1/2 -translate-y-1/2 z-40"
-                      whileHover={{ scale: 1.15, x: 5 }}
+                      className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-40"
+                      whileHover={!isMobile ? { scale: 1.15, x: 5 } : undefined}
                       whileTap={{ scale: 0.9 }}
                     >
                       <IconButton
                         onClick={nextVideo}
-                        className="bg-white hover:bg-gray-50 shadow-2xl border-2 border-gray-200 rounded-full w-16 h-16"
+                        className="bg-white hover:bg-gray-50 shadow-2xl border-2 border-gray-200 rounded-full w-12 h-12 sm:w-16 sm:h-16"
                         sx={{
                           '&:hover': { 
                             backgroundColor: 'white',

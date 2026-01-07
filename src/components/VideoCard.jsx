@@ -5,6 +5,8 @@ import {
   Typography, 
   Box,
   IconButton,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material'
 import { PlayArrow } from '@mui/icons-material'
 import VideoModal from './VideoModal'
@@ -17,6 +19,8 @@ const VideoCard = ({ video, isActive, index, loadInstantly = false }) => {
   const [loadError, setLoadError] = useState(false)
   const cardRef = useRef(null)
   const isInView = useInView(cardRef, { threshold: 0.1, once: true })
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
   const getVideoUrl = (url) => {
     if (!url) return ''
@@ -125,14 +129,16 @@ const VideoCard = ({ video, isActive, index, loadInstantly = false }) => {
           type: 'spring',
           stiffness: 100,
         }}
-        whileHover={{ 
+        whileHover={!isMobile ? { 
           y: -12,
           transition: { duration: 0.3, ease: 'easeOut' }
-        }}
+        } : undefined}
         whileTap={{ scale: 0.98 }}
         className="relative cursor-pointer h-full"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={() => !isMobile && setIsHovered(true)}
+        onMouseLeave={() => !isMobile && setIsHovered(false)}
+        onTouchStart={() => setIsHovered(true)}
+        onTouchEnd={() => setTimeout(() => setIsHovered(false), 300)}
         onClick={handleCardClick}
       >
         <Card
@@ -144,7 +150,14 @@ const VideoCard = ({ video, isActive, index, loadInstantly = false }) => {
           }}
         >
           {/* Video Preview Container */}
-          <Box className="relative w-full aspect-[9/16] min-h-[400px] overflow-hidden">
+          <Box 
+            className="relative w-full aspect-[9/16] overflow-hidden"
+            sx={{
+              minHeight: isMobile ? '300px' : '400px',
+              // Improve performance on mobile
+              willChange: 'auto',
+            }}
+          >
             {/* Modern Placeholder - Always visible as base */}
             <motion.div
               className="absolute inset-0 bg-gradient-to-br from-denim/10 via-blue-50/20 to-purple-50/10"

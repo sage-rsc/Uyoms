@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
-import { Box, Container, Typography, IconButton, Button } from '@mui/material'
+import { Box, Container, Typography, IconButton, Button, useMediaQuery, useTheme } from '@mui/material'
 import { ArrowBack, GridView } from '@mui/icons-material'
 import VideoCard from '../components/VideoCard'
 import { getVideos } from '../utils/storage'
@@ -12,6 +12,8 @@ function Gallery() {
   const navigate = useNavigate()
   const galleryRef = useRef(null)
   const isInView = useInView(galleryRef, { once: true, amount: 0.1 })
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
   useEffect(() => {
     const loadedVideos = getVideos()
@@ -176,7 +178,7 @@ function Gallery() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6 }}
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6"
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6"
           >
             {videos.map((video, index) => (
               <motion.div
@@ -194,11 +196,15 @@ function Gallery() {
                   stiffness: 100,
                   damping: 15,
                 }}
-                whileHover={{ 
+                whileHover={!isMobile ? { 
                   y: -8,
                   transition: { duration: 0.3 }
+                } : undefined}
+                style={{ 
+                  minHeight: isMobile ? '300px' : '400px',
+                  // Improve performance on mobile
+                  willChange: 'auto',
                 }}
-                style={{ minHeight: '400px' }}
               >
                 <VideoCard
                   video={video}
