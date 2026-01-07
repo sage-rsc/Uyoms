@@ -159,6 +159,50 @@ function Admin() {
     setShowAddForm(false)
   }
 
+  const handleExportVideos = () => {
+    try {
+      const videosJson = exportVideos()
+      const blob = new Blob([videosJson], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `uyoms-videos-${new Date().toISOString().split('T')[0]}.json`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      showNotification('Videos exported successfully!', 'success')
+    } catch (error) {
+      console.error('Error exporting videos:', error)
+      showNotification('Failed to export videos', 'error')
+    }
+  }
+
+  const handleImportVideos = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      try {
+        const jsonString = event.target.result
+        if (importVideos(jsonString)) {
+          loadVideos()
+          showNotification('Videos imported successfully!', 'success')
+          window.dispatchEvent(new Event('videosUpdated'))
+        } else {
+          showNotification('Failed to import videos. Invalid format.', 'error')
+        }
+      } catch (error) {
+        console.error('Error importing videos:', error)
+        showNotification('Failed to import videos', 'error')
+      }
+    }
+    reader.readAsText(file)
+    // Reset input
+    e.target.value = ''
+  }
+
   if (!isAuthenticated) {
     return (
       <Box className="min-h-screen bg-gradient-to-br from-white via-blue-50/30 to-denim/10 flex items-center justify-center p-4 relative overflow-hidden">
