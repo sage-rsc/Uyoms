@@ -6,48 +6,71 @@
 // 3. Copy the link and replace the file ID in the format below
 // Format: https://drive.google.com/file/d/FILE_ID/preview
 
+// Catalog Video data - Add your Google Drive video links here
+// These videos are displayed in PORTRAIT format (9:16 aspect ratio)
+// To get a shareable link from Google Drive:
+// 1. Right-click the video file
+// 2. Click "Share" → "Get link" → "Anyone with the link"
+// 3. Copy the link and replace the file ID in the format below
+// Format: https://drive.google.com/file/d/FILE_ID/preview
+
 export const videos = [
   {
-    id: 'video1',
-    title: 'Denim Jacket - Classic Blue',
-    description: 'Premium denim jacket with classic fit. Perfect for any occasion.',
-    videoUrl: 'https://drive.google.com/file/d/YOUR_FILE_ID_1/preview',
-    posterUrl: '', // Optional: Add a poster image URL
+    "id": "video1",
+    "title": "Denim Jacket - Classic Blue",
+    "description": "Premium denim jacket with classic fit. Perfect for any occasion.",
+    "videoUrl": "https://drive.google.com/file/d/1n65RUNI6qc49hU9fmeCjNxMNNRwwSEEm/view?usp=drive_link",
+    "posterUrl": ""
   },
   {
-    id: 'video2',
-    title: 'Slim Fit Jeans - Dark Wash',
-    description: 'Comfortable slim fit jeans with premium stretch fabric.',
-    videoUrl: 'https://drive.google.com/file/d/YOUR_FILE_ID_2/preview',
-    posterUrl: '',
+    "title": "Long Dress",
+    "description": "",
+    "videoUrl": "https://drive.google.com/file/d/1jU1uqmmjqRbZRiQaazkG3cMX7-rfH-of/view?usp=drive_link",
+    "posterUrl": "",
+    "id": "video-1767746173267-3gll1jqfb"
   },
   {
-    id: 'video3',
-    title: 'Denim Shorts - Summer Collection',
-    description: 'Stylish denim shorts perfect for warm weather.',
-    videoUrl: 'https://drive.google.com/file/d/YOUR_FILE_ID_3/preview',
-    posterUrl: '',
+    "title": "Long Dress",
+    "description": "",
+    "videoUrl": "https://drive.google.com/file/d/13HCsLKR6vv45m-PgQxFqZq4mkX8CgLLV/view?usp=drive_link",
+    "posterUrl": "",
+    "id": "video-1767746261771-oymmhvuy7"
   },
   {
-    id: 'video4',
-    title: 'Wide Leg Jeans - Vintage Style',
-    description: 'Retro-inspired wide leg jeans with modern comfort.',
-    videoUrl: 'https://drive.google.com/file/d/YOUR_FILE_ID_4/preview',
-    posterUrl: '',
+    "title": "Dress",
+    "description": "",
+    "videoUrl": "https://drive.google.com/file/d/1jQuvha5-MqDWNtHEdowYImOXBm1Rnceo/view?usp=drive_link",
+    "posterUrl": "",
+    "id": "video-1767746289771-skwvguv3p"
   },
   {
-    id: 'video5',
-    title: 'Denim Shirt - Oversized Fit',
-    description: 'Relaxed fit denim shirt for a casual, stylish look.',
-    videoUrl: 'https://drive.google.com/file/d/YOUR_FILE_ID_5/preview',
-    posterUrl: '',
+    "title": "Dress",
+    "description": "",
+    "videoUrl": "https://drive.google.com/file/d/140dWHX-gtN_lqh3yyLYz3UyWD1-J-r2o/view?usp=drive_link",
+    "posterUrl": "",
+    "id": "video-1767746324419-7a48lonsq"
   },
   {
-    id: 'video6',
-    title: 'High Waist Jeans - Black',
-    description: 'Flattering high waist jeans in classic black denim.',
-    videoUrl: 'https://drive.google.com/file/d/YOUR_FILE_ID_6/preview',
-    posterUrl: '',
+    "title": "Dress",
+    "description": "",
+    "videoUrl": "https://drive.google.com/file/d/1AXpFCJWUbp1pkiJpgObDpzKL57sXFiBv/view?usp=drive_link",
+    "posterUrl": "",
+    "id": "video-1767752075538-ue7ncweuf"
   },
+  {
+    "title": "Dress",
+    "description": "",
+    "videoUrl": "https://drive.google.com/file/d/1Wja5ORtMKQhVhM8QibpBNkzQuszKLsra/view?usp=drive_link",
+    "posterUrl": "",
+    "id": "video-1767752090045-mf7wr7x3z"
+  },
+  {
+    "title": "Dress",
+    "description": "",
+    "videoUrl": "https://drive.google.com/file/d/12YITynxyuoe5JqGkzaqQXhndhRzi0YG2/view?usp=drive_link",
+    "posterUrl": "",
+    "id": "video-1767752104326-df3hrx6im"
+  }
 ]
+
 
