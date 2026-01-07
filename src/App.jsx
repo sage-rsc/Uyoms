@@ -11,13 +11,15 @@ function RedirectHandler() {
 
   useEffect(() => {
     // Check if we have a redirect from 404.html
-    // Format: /?/path/to/page
+    // Format: /?/path/to/page or /Uyoms/?/path/to/page
     const search = location.search
+    
+    // Check for the special redirect format from 404.html
     if (search && search.startsWith('?/')) {
       // Extract the path from ?/path/to/page
       let path = search.slice(2) // Remove '?/'
       
-      // Handle query params and hash if present
+      // Handle query params if present (they come after &)
       const queryIndex = path.indexOf('&')
       if (queryIndex !== -1) {
         path = path.substring(0, queryIndex)
@@ -31,12 +33,11 @@ function RedirectHandler() {
         path = '/' + path
       }
       
-      // Navigate to the decoded path (only if different from current)
-      if (path !== location.pathname) {
-        navigate(path, { replace: true })
-      }
+      // Navigate immediately - don't check current path to avoid conflicts
+      // Use replace: true to avoid adding to history and clean up the query string
+      navigate(path, { replace: true })
     }
-  }, [location.search, location.pathname, navigate])
+  }, [location.search, navigate]) // Run when search changes
 
   return null
 }

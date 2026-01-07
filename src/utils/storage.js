@@ -6,47 +6,82 @@ const INITIALIZED_KEY = 'uyoms_videos_initialized'
 // Import default videos from data file
 import { videos as defaultVideos } from '../data/videos.js'
 
-// Get videos from localStorage
+// Get videos - always merge data file videos (persistent) with localStorage videos (user-added)
 export const getVideos = () => {
   try {
+    // Always get real videos from data file (these are persistent across all users)
+    const realDefaultVideos = defaultVideos.filter(v => 
+      v.videoUrl && 
+      !v.videoUrl.includes('YOUR_FILE_ID') && 
+      v.videoUrl.includes('drive.google.com')
+    )
+    
+    // Get user-added videos from localStorage
     const stored = localStorage.getItem(STORAGE_KEY)
+    let userVideos = []
     if (stored) {
-      const videos = JSON.parse(stored)
-      // Only return stored videos if they exist and aren't empty
-      if (Array.isArray(videos) && videos.length > 0) {
-        return videos
+      try {
+        const parsed = JSON.parse(stored)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          userVideos = parsed
+        }
+      } catch (e) {
+        console.error('Error parsing stored videos:', e)
       }
     }
     
-    // Only initialize with default videos ONCE (first time, and only if they're real videos)
-    const initialized = localStorage.getItem(INITIALIZED_KEY)
-    if (!initialized) {
-      // Filter out placeholder videos (ones with YOUR_FILE_ID)
-      const realVideos = defaultVideos.filter(v => 
+    // Merge: data file videos + user-added videos
+    // Use a Map to avoid duplicates based on video URL
+    const videoMap = new Map()
+    
+    // First, add all default videos from data file (these are the persistent ones)
+    realDefaultVideos.forEach(video => {
+      if (video.videoUrl) {
+        videoMap.set(video.videoUrl, video)
+      }
+    })
+    
+    // Then, add user-added videos (these override defaults if same URL, or add new ones)
+    userVideos.forEach(video => {
+      if (video.videoUrl) {
+        videoMap.set(video.videoUrl, video)
+      }
+    })
+    
+    // Convert map back to array
+    const mergedVideos = Array.from(videoMap.values())
+    
+    // If we have merged videos, save them back to localStorage for consistency
+    if (mergedVideos.length > 0 && userVideos.length !== mergedVideos.length) {
+      // Only update if there's a difference (to avoid unnecessary writes)
+      const hasNewVideos = mergedVideos.some(v => 
+        !realDefaultVideos.some(dv => dv.videoUrl === v.videoUrl)
+      )
+      if (hasNewVideos) {
+        // Save merged videos to localStorage (but mark which are user-added)
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(mergedVideos))
+        localStorage.setItem(INITIALIZED_KEY, 'true')
+      }
+    }
+    
+    return mergedVideos
+  } catch (error) {
+    console.error('Error loading videos:', error)
+    // Fallback: try to return just default videos
+    try {
+      return defaultVideos.filter(v => 
         v.videoUrl && 
         !v.videoUrl.includes('YOUR_FILE_ID') && 
         v.videoUrl.includes('drive.google.com')
       )
-      
-      if (realVideos.length > 0) {
-        setVideos(realVideos)
-        localStorage.setItem(INITIALIZED_KEY, 'true')
-        return realVideos
-      } else {
-        // Mark as initialized even if no real videos, so we don't keep checking
-        localStorage.setItem(INITIALIZED_KEY, 'true')
-      }
+    } catch (e) {
+      return []
     }
-    
-    // Return empty array if no videos exist (don't show placeholders)
-    return []
-  } catch (error) {
-    console.error('Error loading videos:', error)
-    return []
   }
 }
 
 // Save videos to localStorage
+// Note: This saves ALL videos (including data file videos), but getVideos() will merge them
 export const setVideos = (videos) => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(videos))
