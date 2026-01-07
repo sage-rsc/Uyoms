@@ -34,6 +34,7 @@ import {
   Lock,
   Download,
   Upload,
+  ContentCopy,
 } from '@mui/icons-material'
 import { getVideos, addVideo, removeVideo, updateVideo, checkAdminPassword, exportVideos, importVideos } from '../utils/storage'
 
@@ -201,6 +202,51 @@ function Admin() {
     reader.readAsText(file)
     // Reset input
     e.target.value = ''
+  }
+
+  const handleCopyDataFileCode = () => {
+    try {
+      const videos = getVideos()
+      if (videos.length === 0) {
+        showNotification('No videos to copy', 'warning')
+        return
+      }
+
+      // Generate the JavaScript code for videos.js
+      const code = `// Catalog Video data - Add your Google Drive video links here
+// These videos are displayed in PORTRAIT format (9:16 aspect ratio)
+// To get a shareable link from Google Drive:
+// 1. Right-click the video file
+// 2. Click "Share" → "Get link" → "Anyone with the link"
+// 3. Copy the link and replace the file ID in the format below
+// Format: https://drive.google.com/file/d/FILE_ID/preview
+
+export const videos = ${JSON.stringify(videos, null, 2)}
+`
+
+      // Copy to clipboard
+      navigator.clipboard.writeText(code).then(() => {
+        showNotification('Code copied to clipboard! Paste it into src/data/videos.js', 'success')
+      }).catch(() => {
+        // Fallback: show in alert
+        const textarea = document.createElement('textarea')
+        textarea.value = code
+        textarea.style.position = 'fixed'
+        textarea.style.opacity = '0'
+        document.body.appendChild(textarea)
+        textarea.select()
+        try {
+          document.execCommand('copy')
+          showNotification('Code copied to clipboard! Paste it into src/data/videos.js', 'success')
+        } catch (err) {
+          showNotification('Failed to copy. Please use Export Videos instead.', 'error')
+        }
+        document.body.removeChild(textarea)
+      })
+    } catch (error) {
+      console.error('Error copying data file code:', error)
+      showNotification('Failed to generate code', 'error')
+    }
   }
 
   if (!isAuthenticated) {
@@ -508,6 +554,19 @@ function Admin() {
                   style={{ display: 'none' }}
                   onChange={handleImportVideos}
                 />
+              </motion.div>
+              
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  variant="outlined"
+                  startIcon={<ContentCopy />}
+                  onClick={handleCopyDataFileCode}
+                  className="border-green-500 text-green-600 hover:bg-green-50 font-semibold rounded-xl"
+                  sx={{ textTransform: 'none', py: 1.5, px: 3 }}
+                  title="Copy code to paste into src/data/videos.js to make videos persistent across all devices"
+                >
+                  Copy Data File Code
+                </Button>
               </motion.div>
             </motion.div>
           )}
